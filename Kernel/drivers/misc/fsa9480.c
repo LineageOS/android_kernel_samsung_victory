@@ -129,7 +129,7 @@ struct fsa9480_usbsw {
 static struct fsa9480_usbsw *local_usbsw;
 struct switch_dev indicator_dev;
 static int micro_usb_status;
-static int dock_status = 0;
+/* static int dock_status = 0; */
 static int MicroJigUARTOffStatus=0;
 unsigned int adc_fsa;
 
@@ -179,8 +179,7 @@ static int fsa9480_get_usb_status(void)
 	else 
 		return 0;
 }
-
-int fsa9480_get_dock_status(void)
+/* int fsa9480_get_dock_status(void)
 {
 	if (dock_status)
 		return 1;
@@ -188,7 +187,7 @@ int fsa9480_get_dock_status(void)
 		return 0;
 }
 EXPORT_SYMBOL(fsa9480_get_dock_status);
-
+*/
 void FSA9480_Enable_SPK(u8 enable)
 {
 	static struct regulator *esafeout2_regulator;
@@ -449,6 +448,8 @@ EXPORT_SYMBOL(fsa9480_manual_switching);
 extern void askon_gadget_disconnect();
 #endif
 
+int dock_status = 0;
+
 static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 {
 	int device_type, ret;
@@ -541,7 +542,12 @@ static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 			if (pdata->deskdock_cb)
 				pdata->deskdock_cb(FSA9480_ATTACHED);
 				dock_status = 1;
-			
+            ret = i2c_smbus_write_byte_data(client,
+                                            FSA9480_REG_MANSW1, SW_AUDIO);
+            if (ret < 0)
+                dev_err(&client->dev,
+                        "%s: err %d\n", __func__, ret);
+            
 			ret = i2c_smbus_write_byte_data(client,
 					FSA9480_REG_MANSW1, SW_DHOST);
 			if (ret < 0)
@@ -564,7 +570,13 @@ static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 			if (pdata->cardock_cb)
 				pdata->cardock_cb(FSA9480_ATTACHED);
 			dock_status = 1;
-		}
+            ret = i2c_smbus_write_byte_data(client,
+                                            FSA9480_REG_MANSW1, SW_AUDIO);
+            
+            if (ret < 0)
+                dev_err(&client->dev,
+                        "%s: err %d\n", __func__, ret);
+        }
 	/* Detached */
 	} else {
 		/* USB */
@@ -626,13 +638,35 @@ static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 			if (pdata->cardock_cb)
 				pdata->cardock_cb(FSA9480_DETACHED);
 			dock_status = 0;
+            
+            ret = i2c_smbus_read_byte_data(client,
+                                           FSA9480_REG_CTRL);
+            if (ret < 0)
+                dev_err(&client->dev,
+                        "%s: err %d\n", __func__, ret);
+            
+            ret = i2c_smbus_write_byte_data(client,
+                                            FSA9480_REG_CTRL, ret | CON_MANUAL_SW);
+            if (ret < 0)
+                dev_err(&client->dev,
+                        "%s: err %d\n", __func__, ret);
 		}
 	}
 
 	usbsw->dev1 = val1;
 	usbsw->dev2 = val2;
 }
-
+int fsa9480_get_dock_status(void)
+{
+    if (dock_status) 
+    return 1;            
+  else
+    return 0;
+}
+        
+EXPORT_SYMBOL(fsa9480_get_dock_status);
+        
+        
 static void fsa9480_reg_init(struct fsa9480_usbsw *usbsw)
 {
 	struct i2c_client *client = usbsw->client;

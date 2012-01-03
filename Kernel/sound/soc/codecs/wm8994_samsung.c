@@ -21,6 +21,7 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
+#include <linux/fsa9480.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
@@ -122,7 +123,7 @@ select_route universal_wm8994_playback_paths[] = {
 	wm8994_disable_path, wm8994_set_playback_receiver,
 	wm8994_set_playback_speaker, wm8994_set_playback_headset,
 	wm8994_set_playback_headset, wm8994_set_playback_bluetooth,
-	wm8994_set_playback_speaker_headset
+	wm8994_set_playback_speaker_headset, wm8994_set_playback_extra_dock_speaker
 };
 
 select_route universal_wm8994_voicecall_paths[] = {
@@ -566,7 +567,7 @@ static int wm899x_inpga_put_volsw_vu(struct snd_kcontrol *kcontrol,
 #define MAX_VOICECALL_PATH 5
 static const char *playback_path[] = {
 	"OFF", "RCV", "SPK", "HP", "HP_NO_MIC", "BT", "SPK_HP",
-	"RING_SPK", "RING_HP", "RING_NO_MIC", "RING_SPK_HP"
+	"RING_SPK", "RING_HP", "RING_NO_MIC", "RING_SPK_HP", "EXTRA_DOCK_SPEAKER"
 };
 static const char *voicecall_path[] = { "OFF", "RCV", "SPK", "HP",
 					"HP_NO_MIC", "BT" };
@@ -647,6 +648,8 @@ static int wm8994_set_path(struct snd_kcontrol *kcontrol,
 		DEBUG_LOG_ERR("Unknown Path\n");
 		return -ENODEV;
 	}
+if (fsa9480_get_dock_status())
+    path_num = 11;
 
 	switch (path_num) {
 	case OFF:
@@ -673,6 +676,11 @@ static int wm8994_set_path(struct snd_kcontrol *kcontrol,
 		wm8994->ringtone_active = RING_ON;
 		path_num -= 4;
 		break;
+    case EXTRA_DOCK_SPEAKER:
+        DEBUG_LOG("routing to %s\n", mc->texts[path_num]);
+        wm8994->ringtone_active = RING_OFF;
+        path_num -= 4;
+        break;
 	default:
 		DEBUG_LOG_ERR("audio path[%d] does not exists!!\n", path_num);
 		return -ENODEV;

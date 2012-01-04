@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAAO3///oQ\u003d",
+        "filename": "Kernel/arch/arm/configs/cyanogenmod_epicmtd_defconfig",
+        "patchSetId": 1
+      },
+      "lineNbr": 1082,
+      "author": {
+        "id": 883
+      },
+      "writtenOn": "2012-01-04T07:22:34Z",
+      "side": 1,
+      "message": "change it to \nCONFIG_BCM4329_FW_PATH\u003d\"/system/vendor/firmware/fw_bcm4329.bin\"\nCONFIG_BCM4329_NVRAM_PATH\u003d\"/system/etc/wifi/nvram_net.txt\"",
+      "revId": "ae7ed135529b46e84d4220b56417a6499034ea0b",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}

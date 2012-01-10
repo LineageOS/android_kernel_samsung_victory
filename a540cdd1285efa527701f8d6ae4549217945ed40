@@ -1,0 +1,9 @@
+Change-Id: Ia540cdd1285efa527701f8d6ae4549217945ed40
+Code-Review+2: Will Keaney <keaneyw@gmail.com>
+Verified+1: Will Keaney <keaneyw@gmail.com>
+Verified+1: Mike Kasick <mike@kasick.org>
+Submitted-by: Will Keaney <keaneyw@gmail.com>
+Submitted-at: Tue, 10 Jan 2012 05:01:44 +0300
+Reviewed-on: http://review.cyanogenmod.com/11613
+Project: CyanogenMod/android_kernel_samsung_victory
+Branch: refs/heads/gingerbread

@@ -1,0 +1,9 @@
+Change-Id: Ie4e63d75b246496a40fff0b36479674e0a04e0de
+Code-Review+2: Troy Smith <fayted@gmail.com>
+Verified+1: Troy Smith <fayted@gmail.com>
+Verified+1: Warren Togami <wtogami@gmail.com>
+Submitted-by: Mike Kasick <mike@kasick.org>
+Submitted-at: Tue, 10 Jan 2012 08:09:34 +0300
+Reviewed-on: http://review.cyanogenmod.com/11619
+Project: CyanogenMod/android_kernel_samsung_victory
+Branch: refs/heads/gingerbread

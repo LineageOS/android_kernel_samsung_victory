@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAAPn///8Y\u003d",
+        "filename": "Kernel/drivers/staging/android/lowmemorykiller.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 895
+      },
+      "writtenOn": "2012-01-23T13:43:58Z",
+      "side": 1,
+      "message": "gah.. Duplicate declaration here. I\u0027ll fix it in the morning.",
+      "revId": "6800419827fee634e93c76bfde9de4585115853a",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}

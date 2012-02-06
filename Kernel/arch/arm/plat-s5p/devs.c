@@ -84,6 +84,7 @@ static char *usb_functions_acm_ums_adb[] = {
         "acm",
         "usb_mass_storage",
         "adb",
+        "rndis",
 };
 /* mtp only mode */
 static char *usb_functions_mtp[] = {

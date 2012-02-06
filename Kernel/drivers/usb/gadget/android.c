@@ -578,7 +578,8 @@ void android_enable_function(struct usb_function *f, int enable)
 				dev->current_usb_mode = USBSTATUS_MTPONLY;
 			currentusbstatus =  dev->current_usb_mode; 
 		}
-		if (!strcmp(f->name, "rndis")) {
+		if (!strcmp(f->name, "rndis") && !dev->debugging_usb_mode) {
+			/* adb mode already supports rndis, only switch when not in adb mode. */
 			ret = set_product(dev, USBSTATUS_VTP);
 		}
 		if (!strcmp(f->name, "usb_mass_storage")) {
@@ -593,7 +594,7 @@ void android_enable_function(struct usb_function *f, int enable)
                   //dev->current_usb_mode = USBSTATUS_UMS;
                 /* for disable : Return old mode. If Non-GED model changes policy, below code has to be modified. */
 		if (!strcmp(f->name, "rndis") && dev->debugging_usb_mode)
-			ret = set_product(dev, USBSTATUS_ADB);
+			; /* Never switched modes, so no need to switch back. */
 		else{
 			ret = set_product(dev, dev->current_usb_mode);
 			if (!strcmp(f->name, "adb"))

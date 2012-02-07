@@ -227,8 +227,8 @@ struct s3cfb_global {
 	struct device		*dev;
 	struct clk		*clock;
 	struct regulator	*regulator;
-	struct regulator        *vcc_lcd;
-	struct regulator        *vlcd;
+	struct regulator	*vcc_lcd;
+	struct regulator	*vlcd;
 	int			irq;
 	struct fb_info		**fb;
 	struct completion	fb_complete;
@@ -240,7 +240,7 @@ struct s3cfb_global {
 	enum s3cfb_output_t	output;
 	enum s3cfb_rgb_mode_t	rgb_mode;
 	struct s3cfb_lcd	*lcd;
-	u32      pixclock_hz;
+	u32			pixclock_hz;
 
 #ifdef CONFIG_HAS_WAKELOCK
 	struct early_suspend	early_suspend;

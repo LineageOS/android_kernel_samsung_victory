@@ -416,11 +416,19 @@ static int mfc_ioctl(struct inode *inode, struct file *file, unsigned int cmd, u
 		break;
 
        case IOCTL_MFC_BUF_CACHE:
+		/* Ignore IOCTL_MFC_BUF_CACHE requests.
+		 * Buffer cache support (and this ioctl) is neither implemented in the
+		 * crespo 2.6.35 kernel, nor is it ever used in Gingerbread ROMs, including
+		 * EL30.  There appears to be partial support for it in this driver, but
+		 * it's broken, resulting in artifacts lines in decoded video.  It's most
+		 * noticeable on 240p mpeg4 video, but is not limited to it.
 		mutex_lock(&mfc_mutex);
 		
 		mfc_ctx->buf_type = in_param.args.buf_type;
 
 		mutex_unlock(&mfc_mutex);
+		 */
+		mfc_info("Ignoring IOCTL_MFC_BUF_CACHE request as support for it is broken.\n");
 		break;
 		
 	default:

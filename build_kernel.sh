@@ -129,6 +129,8 @@ BUILD_KERNEL()
                     echo "Copying $kmod to $DPATH/modules/"
                     cp $kmod $DPATH/modules/
                 done
+                echo "Stripping $DPATH/modules/*.ko"
+                $TCPATH/${TOOLCHAIN_PREFIX}strip $DPATH/modules/*.ko
 	popd
 }
 

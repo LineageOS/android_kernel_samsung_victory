@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "AAAAQX//7ZA\u003d",
+        "filename": "Kernel/arch/arm/mach-s5pv210/mach-victory.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 3162,
+      "author": {
+        "id": 431
+      },
+      "writtenOn": "2012-03-08T21:31:14Z",
+      "side": 1,
+      "message": "keep the tabs",
+      "revId": "184ada0d8765af89b1f271922826b21699e35302",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "AAAAQX//7Y8\u003d",
+        "filename": "Kernel/arch/arm/mach-s5pv210/mach-victory.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 3491,
+      "author": {
+        "id": 431
+      },
+      "writtenOn": "2012-03-08T21:31:14Z",
+      "side": 1,
+      "message": "same here",
+      "revId": "184ada0d8765af89b1f271922826b21699e35302",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}

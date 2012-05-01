@@ -45,6 +45,11 @@
 
 #define DEVICE_NAME "cypress-touchkey"
 
+struct class *buttoncontrol_class;
+EXPORT_SYMBOL(buttoncontrol_class);
+
+static bool touchleds_disabled = false;
+
 struct cypress_touchkey_devdata {
 	struct i2c_client *client;
 	struct input_dev *input_dev;
@@ -139,8 +144,10 @@ static ssize_t touch_led_control(struct device *dev,
 			devdata_led->is_delay_led_on = true;
 			return size;
 		}
-		ret = i2c_touchkey_write(devdata_led, &devdata_led->backlight_on, 1);
-		printk("Touch Key led ON\n");
+		if (!touchleds_disabled) {
+			ret = i2c_touchkey_write(devdata_led, &devdata_led->backlight_on, 1);
+			printk("Touch Key led ON\n");
+		}
 	}
 	else
 	{
@@ -190,6 +197,56 @@ static ssize_t touch_control_enable_disable(struct device *dev,
 
 	return size;
 }
+
+static void touch_led_on(int val)
+{
+	int ret;
+    printk(KERN_DEBUG "[TSP] keyled : %d \n", val );
+
+    if(val > 0 && !touchleds_disabled) {
+		ret = i2c_touchkey_write(devdata_led, &devdata_led->backlight_on, 1);
+        printk(KERN_DEBUG "[TSP] keyled : on, ret = %i\n",ret);
+    } else {
+		ret = i2c_touchkey_write(devdata_led, &devdata_led->backlight_off, 1);
+        printk(KERN_DEBUG "[TSP] keyled : off, ret = %i\n",ret);
+    }
+}
+
+static ssize_t touchleds_disabled_status_write(struct device *dev,
+      struct device_attribute *attr, const char *buf, size_t size)
+{
+  unsigned int data;
+  if(sscanf(buf, "%u\n", &data) == 1) {
+    pr_devel("%s: %u \n", __FUNCTION__, data);
+    if(data == 0 || data == 1) {
+      if(data == 0) {
+        pr_info("%s: key function enabled\n", __FUNCTION__);
+        touchleds_disabled = false;
+        touch_led_on(255);
+      }
+
+      if(data == 1) {
+        pr_info("%s: key function disabled\n", __FUNCTION__);
+        touchleds_disabled = true;
+        touch_led_on(false);
+      }
+    } else {
+      pr_info("%s: invalid input range %u\n", __FUNCTION__, data);
+    }
+  } else {
+    pr_info("%s: invalid input\n", __FUNCTION__);
+  }
+
+  return size;
+}
+
+static ssize_t touchleds_disabled_status_read(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+{
+  return sprintf(buf, "%u\n", (touchleds_disabled ? 1 : 0));
+}
+
+static DEVICE_ATTR(touchleds_disabled, S_IRUGO | S_IWUGO , touchleds_disabled_status_read, touchleds_disabled_status_write);
 
 static void all_keys_up(struct cypress_touchkey_devdata *devdata)
 {
@@ -383,6 +440,7 @@ static void cypress_touchkey_early_resume(struct early_suspend *h)
 		msleep(80); // touch power on time
 		ret = i2c_touchkey_write(devdata, &devdata->backlight_on, 1);
 		dev_err(&devdata->client->dev,"%s: Touch Key led ON ret = %d\n",__func__, ret);
+
 	}
 	devdata->is_delay_led_on = false;
 }
@@ -571,6 +629,11 @@ static int __init touchkey_init(void)
 	if (ret)
 		pr_err("%s: cypress touch keypad registration failed. (%d)\n",
 				__func__, ret);
+
+	buttoncontrol_class = class_create(THIS_MODULE, "button_control");
+
+    if (device_create_file(ts_key_dev, &dev_attr_touchleds_disabled) < 0)
+        pr_err("Failed to create device file(%s)!\n", dev_attr_touchleds_disabled.attr.name);
 
 	return ret;
 }

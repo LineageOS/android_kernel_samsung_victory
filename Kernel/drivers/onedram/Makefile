@@ -2,14 +2,14 @@
 # Makefile for kernel Onedram drivers.
 #
 ifeq ($(CONFIG_MACH_FORTE),y)
-obj-$(CONFIG_SAMSUNG_PHONE_TTY) +=dpram/dpram_forte.o
+obj-$(CONFIG_SAMSUNG_PHONE_TTY) +=dpram_forte.o
 endif
 
 ifeq ($(CONFIG_MACH_ATLAS),y)
-obj-$(CONFIG_SAMSUNG_PHONE_TTY) +=dpram/dpram_atlas.o
+obj-$(CONFIG_SAMSUNG_PHONE_TTY) +=dpram_atlas.o
 endif
 ifeq ($(CONFIG_MACH_VICTORY),y)
-obj-$(CONFIG_SAMSUNG_PHONE_TTY) +=dpram/dpram.o
+obj-$(CONFIG_SAMSUNG_PHONE_TTY) +=dpram.o
 endif
 #obj-$(CONFIG_SAMSUNG_PHONE_TTY) +=victory/multipdp.o
 

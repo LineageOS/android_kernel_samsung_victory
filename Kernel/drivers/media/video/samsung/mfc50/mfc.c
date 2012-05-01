@@ -85,8 +85,9 @@ static int mfc_open(struct inode *inode, struct file *file)
 		}
 
 #ifdef CONFIG_DVFS_LIMIT
-		s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_1, L2);
-#endif
+
+		s5pv210_lock_dvfs_high_level(DVFS_LOCK_TOKEN_1, L4); //400MHz
+	#endif
 		clk_enable(mfc_sclk);
 
 		mfc_load_firmware(mfc_fw_info->data, mfc_fw_info->size);
@@ -366,6 +367,7 @@ static long mfc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		else
 			in_param.ret_code = mfc_allocate_buffer(mfc_ctx, &in_param.args, 1);
 
+
 		mfc_ctx->desc_buff_paddr = in_param.args.mem_alloc.out_paddr + CPB_BUF_SIZE;
 
 		ret = in_param.ret_code;
@@ -419,7 +421,7 @@ static long mfc_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		break;
 
-	case IOCTL_MFC_BUF_CACHE:
+       case IOCTL_MFC_BUF_CACHE:
 		mutex_lock(&mfc_mutex);
 
 		in_param.ret_code = MFCINST_RET_OK;
@@ -612,8 +614,8 @@ static int mfc_probe(struct platform_device *pdev)
 	mfc_debug(" mfc_port1_base_paddr= 0x%x \n", mfc_port1_base_paddr);
 	mfc_debug(" mfc_port1_memsize = 0x%x \n", mfc_port1_memsize);
 
-    mfc_port1_base_paddr = ALIGN_TO_128KB(mfc_port1_base_paddr);
-    mfc_port1_base_vaddr = phys_to_virt(mfc_port1_base_paddr);
+	mfc_port1_base_paddr = ALIGN_TO_128KB(mfc_port1_base_paddr);
+	mfc_port1_base_vaddr = phys_to_virt(mfc_port1_base_paddr);
 
 	if (mfc_port1_base_vaddr == NULL) {
 		mfc_err("fail to mapping port1 buffer\n");

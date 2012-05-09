@@ -59,6 +59,7 @@ struct cypress_touchkey_devdata {
 	bool is_delay_led_on;
 	bool is_backlight_on;
 	bool is_key_pressed;
+	bool is_bl_disabled;
 	struct mutex mutex;
 };
 
@@ -177,6 +178,9 @@ static ssize_t touch_led_control(struct device *dev,
 
 	if (strncmp(buf, "1", 1) == 0)
 	{
+		if (devdata_led->is_bl_disabled)
+			goto unlock;
+
 		devdata_led->is_backlight_on = true;
 		if (devdata_led->is_powering_on || devdata_led->is_key_pressed) {
 			dev_err(dev, "%s: delay led on \n", __func__);
@@ -533,6 +537,40 @@ DELAY_ATTR(resume_delay)
 #undef DELAY_ATTR
 #endif
 
+static ssize_t touchleds_disabled_show(struct device *dev,
+                                       struct device_attribute *attr,
+                                       char *buf)
+{
+	int res;
+
+	mutex_lock(&devdata_led->mutex);
+	res = snprintf(buf, PAGE_SIZE, "%u\n",
+	               (unsigned int)devdata_led->is_bl_disabled);
+	mutex_unlock(&devdata_led->mutex);
+
+	return res;
+}
+
+static ssize_t touchleds_disabled_store(struct device *dev,
+                                        struct device_attribute *attr,
+                                        const char *buf, size_t count)
+{
+	unsigned long val;
+	int res;
+
+	if ((res = strict_strtoul(buf, 10, &val)) < 0)
+		return res;
+
+	mutex_lock(&devdata_led->mutex);
+	devdata_led->is_bl_disabled = val;
+	mutex_unlock(&devdata_led->mutex);
+
+	return count;
+}
+
+static DEVICE_ATTR(touchleds_disabled, S_IRUGO | S_IWUSR,
+                   touchleds_disabled_show, touchleds_disabled_store);
+
 extern struct class *sec_class;
 struct device *ts_key_dev;
 
@@ -593,6 +631,7 @@ static int cypress_touchkey_probe(struct i2c_client *client,
 	devdata->is_delay_led_on = false;
 	devdata->is_backlight_on = true;
 	devdata->is_key_pressed = false;
+	devdata->is_bl_disabled = false;
 	mutex_init(&devdata->mutex);
 
 	if(devdata->pdata->touchkey_onoff)
@@ -643,6 +682,9 @@ static int cypress_touchkey_probe(struct i2c_client *client,
 		pr_err("Unable to create \"%s\".\n", dev_attr_resume_delay.attr.name);
 #endif
 
+	if (device_create_file(ts_key_dev, &dev_attr_touchleds_disabled) < 0)
+		pr_err("Unable to create \"%s\".\n", dev_attr_touchleds_disabled.attr.name);
+
 #if 0
 	err = i2c_touchkey_write_byte(devdata, devdata->backlight_on);
 	if (err) {
@@ -680,6 +722,7 @@ err_read:
 	device_remove_file(ts_key_dev, &dev_attr_key_off_delay);
 	device_remove_file(ts_key_dev, &dev_attr_resume_delay);
 #endif
+	device_remove_file(ts_key_dev, &dev_attr_touchleds_disabled);
 	mutex_destroy(&devdata->mutex);
 	input_unregister_device(input_dev);
 	goto err_input_alloc_dev;
@@ -709,6 +752,7 @@ static int __devexit i2c_touchkey_remove(struct i2c_client *client)
 	device_remove_file(ts_key_dev, &dev_attr_key_off_delay);
 	device_remove_file(ts_key_dev, &dev_attr_resume_delay);
 #endif
+	device_remove_file(ts_key_dev, &dev_attr_touchleds_disabled);
 	mutex_destroy(&devdata->mutex);
 	input_unregister_device(devdata->input_dev);
 	kfree(devdata);

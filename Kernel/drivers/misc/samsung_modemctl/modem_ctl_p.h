@@ -35,20 +35,20 @@ struct net_device;
 struct m_pipe {
 	int (*push_header)(struct modem_io *io, void *header);
 	int (*pull_header)(struct modem_io *io, void *header);
-
+    
 	unsigned header_size;
-
+    
 	struct m_fifo *tx;
 	struct m_fifo *rx;
-
+    
 	struct modemctl *mc;
 	unsigned ready;
-
+    
 	struct miscdevice dev;
-
+    
 	struct mutex tx_lock;
 	struct mutex rx_lock;
-
+    
 	struct wake_lock wakelock;
 };
 #define to_m_pipe(misc) container_of(misc, struct m_pipe, dev)
@@ -58,7 +58,7 @@ struct m_fifo {
 	unsigned *tail;
 	unsigned size;
 	void *data;
-
+    
 	unsigned avail;
 	unsigned bits;
 	unsigned unused1;
@@ -68,30 +68,30 @@ struct m_fifo {
 struct modemstats {
 	unsigned request_no_wait;
 	unsigned request_wait;
-
+    
 	unsigned release_no_action;
 	unsigned release_bp_waiting;
 	unsigned release_bp_signaled;
-
+    
 	unsigned bp_req_instant;
 	unsigned bp_req_delayed;
 	unsigned bp_req_confused;
-
+    
 	unsigned rx_unknown;
 	unsigned rx_dropped;
 	unsigned rx_purged;
 	unsigned rx_received;
-
+    
 	unsigned tx_no_delay;
 	unsigned tx_queued;
 	unsigned tx_bp_signaled;
 	unsigned tx_fifo_full;
-
+    
 	unsigned pipe_tx;
 	unsigned pipe_rx;
 	unsigned pipe_tx_delayed;
 	unsigned pipe_rx_purged;
-
+    
 	unsigned resets;
 };
 
@@ -100,54 +100,56 @@ struct modemstats {
 struct modemctl {
 	void __iomem *mmio;
 	struct modemstats stats;
-
+    
 	/* lock and waitqueue for shared memory state */
 	spinlock_t lock;
 	wait_queue_head_t wq;
-
+    
 	/* shared memory semaphore management */
 	unsigned mmio_req_count;
 	unsigned mmio_bp_request;
 	unsigned mmio_owner;
 	unsigned mmio_signal_bits;
-
+    
 	struct m_fifo fmt_tx;
 	struct m_fifo fmt_rx;
 	struct m_fifo raw_tx;
 	struct m_fifo raw_rx;
 	struct m_fifo rfs_tx;
 	struct m_fifo rfs_rx;
-
+    
 	struct wake_lock ip_tx_wakelock;
 	struct wake_lock ip_rx_wakelock;
-
+    
 	struct net_device *ndev;
-
+    
 	int open_count;
 	int status;
-
+    
 	unsigned mmbase;
 	unsigned mmsize;
-
+    
 	int irq_bp;
 	int irq_mbox;
-
+    
 	unsigned gpio_phone_active;
 	unsigned gpio_pda_active;
 	unsigned gpio_cp_reset;
-
+	unsigned gpio_phone_on;
+	bool is_cdma_modem;
+    
 	struct miscdevice dev;
-
+    
 	struct m_pipe cmd_pipe;
 	struct m_pipe rfs_pipe;
-
+    
 	struct mutex ctl_lock;
 	ktime_t mmio_t0;
-
+    
 	/* used for ramdump mode */
 	unsigned ramdump_size;
 	loff_t ramdump_pos;
-
+    
 	unsigned logdump;
 	unsigned logdump_data;
 };
@@ -291,10 +293,10 @@ void modem_force_crash(struct modemctl *mc);
 #define SIZ_LOGDUMP_DATA	0x00300000
 
 #define INIT_M_FIFO(name, type, dir, base) \
-	name.head = base + OFF_##type##_##dir##_HEAD; \
-	name.tail = base + OFF_##type##_##dir##_TAIL; \
-	name.data = base + OFF_##type##_##dir##_DATA; \
-	name.size = SIZ_##type##_DATA;
+name.head = base + OFF_##type##_##dir##_HEAD; \
+name.tail = base + OFF_##type##_##dir##_TAIL; \
+name.data = base + OFF_##type##_##dir##_DATA; \
+name.size = SIZ_##type##_DATA;
 
 /* onedram registers */
 

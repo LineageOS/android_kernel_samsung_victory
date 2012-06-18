@@ -23,12 +23,15 @@ busybox mknod -m 0666 /dev/mtd/mtd4     c 90 8
 busybox mknod -m 0666 /dev/mtd/mtd4ro   c 90 9
 busybox mknod -m 0666 /dev/mtd/mtd5     c 90 10
 busybox mknod -m 0666 /dev/mtd/mtd5ro   c 90 11
+busybox mknod -m 0666 /dev/mtd/mtd6     c 90 12
+busybox mknod -m 0666 /dev/mtd/mt66ro   c 90 13
 busybox mknod -m 0666 /dev/block/mtdblock0 b 31 0
 busybox mknod -m 0666 /dev/block/mtdblock1 b 31 1
 busybox mknod -m 0666 /dev/block/mtdblock2 b 31 2
 busybox mknod -m 0666 /dev/block/mtdblock3 b 31 3
 busybox mknod -m 0666 /dev/block/mtdblock4 b 31 4
 busybox mknod -m 0666 /dev/block/mtdblock5 b 31 5
+busybox mknod -m 0666 /dev/block/mtdblock6 b 31 6
 busybox mknod -m 0666 /dev/mem     c 1 1
 
 busybox date >>boot.txt
